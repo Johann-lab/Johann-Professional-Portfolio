@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavDashboard from "../navigation dashboard/NavDashboard";
 import { getLogPosts } from "@/lib/data";
 import { useTheme } from "@/context/ThemeContext";
@@ -27,22 +27,50 @@ export default function LogsPage() {
   const [posts, setPosts] = useState<LogPost[]>([]);
   const [layoutMode, setLayoutMode] = useState<"list" | "grid">("list");
   const [sortOrder, setSortOrder] = useState<"oldest" | "newest">("oldest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [weekFilter, setWeekFilter] = useState<string>("all");
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch posts on mount
-  if (isLoading) {
-    getLogPosts().then(data => {
-      setPosts(data);
-      setIsLoading(false);
-    });
-  }
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPosts = async () => {
+      const data = await getLogPosts();
+
+      if (isMounted) {
+        setPosts(data);
+        setIsLoading(false);
+      }
+    };
+
+    loadPosts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Sort posts based on sortOrder
   const sortedPosts = [...posts].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
     return sortOrder === "oldest" ? dateA - dateB : dateB - dateA;
+  });
+
+  const availableWeeks = [...posts].sort((a, b) => a.week - b.week);
+
+  const filteredPosts = sortedPosts.filter((post) => {
+    const matchesWeek = weekFilter === "all" || post.week === Number(weekFilter);
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      post.title.toLowerCase().includes(normalizedSearch) ||
+      post.summary.toLowerCase().includes(normalizedSearch) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(normalizedSearch)) ||
+      post.week.toString().includes(normalizedSearch);
+
+    return matchesWeek && matchesSearch;
   });
 
   const selectedPost = posts.find(p => p.week === selectedWeek);
@@ -74,20 +102,54 @@ export default function LogsPage() {
 
       <section className="pt-32 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div>
-              <h1 className={`text-6xl md:text-7xl font-bold mb-4 ${
-                isDark ? "text-white" : "text-[#0F172A]"
-              }`}>
-                Development Logs
-              </h1>
-              <p className={`text-xl leading-relaxed ${
-                isDark ? "text-[#CBD5E1]" : "text-[#64748B]"
-              }`}>
-                Detailed documentation of technical progress, challenges, learnings, and implementations throughout the development journey.
-              </p>
-            </div>
-            <div className="flex gap-3">
+          <div className="mb-16 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className={`text-5xl md:text-6xl font-bold mb-6 leading-tight ${
+              isDark ? "text-white" : "text-[#0F172A]"
+            }`}>
+              Development <span className="bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] bg-clip-text text-transparent">Logs</span>
+            </h1>
+            <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${
+              isDark ? "text-[#CBD5E1]" : "text-[#64748B]"
+            }`}>
+              Detailed documentation of technical progress, challenges, learnings, and implementations throughout the development journey.
+            </p>
+            <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(12rem,14rem)_auto_auto] items-center">
+              <div className="relative">
+                <svg className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                  isDark ? "text-[#64748B]" : "text-[#94A3B8]"
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.35-5.65a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search logs by title, summary, tag, or week"
+                  className={`w-full rounded-lg border-2 pl-12 pr-4 py-3 text-sm md:text-base transition-all duration-300 focus:outline-none focus:scale-[1.01] ${
+                    isDark
+                      ? "bg-[#0F172A] border-[#334155] text-white placeholder-[#64748B] focus:border-[#7C3AED] focus:shadow-lg focus:shadow-[#7C3AED]/20"
+                      : "bg-white border-[#E2E8F0] text-[#0F172A] placeholder-[#94A3B8] focus:border-[#1E40AF] focus:shadow-lg focus:shadow-[#1E40AF]/10"
+                  }`}
+                />
+              </div>
+
+              <select
+                value={weekFilter}
+                onChange={(e) => setWeekFilter(e.target.value)}
+                className={`w-full rounded-lg border-2 px-4 py-3 text-sm md:text-base transition-all duration-300 focus:outline-none focus:scale-[1.01] ${
+                  isDark
+                    ? "bg-[#0F172A] border-[#334155] text-white focus:border-[#7C3AED] focus:shadow-lg focus:shadow-[#7C3AED]/20"
+                    : "bg-white border-[#E2E8F0] text-[#0F172A] focus:border-[#1E40AF] focus:shadow-lg focus:shadow-[#1E40AF]/10"
+                }`}
+              >
+                <option value="all">All weeks</option>
+                {availableWeeks.map((post) => (
+                  <option key={post.week} value={post.week}>
+                    Week {post.week}
+                  </option>
+                ))}
+              </select>
+
               <button
                 onClick={() => setSortOrder(sortOrder === "oldest" ? "newest" : "oldest")}
                 className="p-3 bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center"
@@ -103,6 +165,7 @@ export default function LogsPage() {
                   </svg>
                 )}
               </button>
+
               <button
                 onClick={() => setLayoutMode(layoutMode === "list" ? "grid" : "list")}
                 className="p-3 bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center"
@@ -123,7 +186,7 @@ export default function LogsPage() {
 
           {layoutMode === "list" ? (
             <div className="space-y-4">
-            {sortedPosts.map((post, idx) => (
+            {filteredPosts.map((post, idx) => (
               <div
                 key={post.slug}
                 onClick={() => setSelectedWeek(post.week)}
@@ -192,7 +255,7 @@ export default function LogsPage() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedPosts.map((post, idx) => (
+              {filteredPosts.map((post, idx) => (
                 <div
                   key={post.slug}
                   onClick={() => setSelectedWeek(post.week)}
@@ -267,6 +330,15 @@ export default function LogsPage() {
                   </div>
                 </div>
               ))}
+
+              {filteredPosts.length === 0 && (
+                <div className={`rounded-2xl border-2 border-dashed p-10 text-center ${
+                  isDark ? "border-[#334155] text-[#CBD5E1]" : "border-[#E2E8F0] text-[#64748B]"
+                }`}>
+                  <p className="text-lg font-semibold mb-2">No logs match your filters.</p>
+                  <p className="text-sm">Try a different search term or switch the week dropdown back to All weeks.</p>
+                </div>
+              )}
             </div>
           )}
 
