@@ -24,7 +24,7 @@ export default function Badge({
 
   return (
     <span
-      className={`px-4 py-1.5 text-xs font-bold text-white rounded-lg shadow-sm hover:shadow-md transition-all ${className}`}
+      className={`px-3 py-1.5 text-xs font-semibold text-white rounded-md shadow-sm hover:shadow-md hover:scale-105 transition-all ${className}`}
       style={{ backgroundColor: bgColor }}
     >
       {children}

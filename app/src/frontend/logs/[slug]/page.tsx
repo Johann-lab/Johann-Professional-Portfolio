@@ -41,29 +41,29 @@ export default async function LogPostPage({ params }: Props) {
   const nextPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF]">
+    <div className="min-h-screen animate-in fade-in duration-1000 bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF] dark:from-[#0F172A] dark:via-[#1E293B] dark:to-[#0F172A] transition-colors">
       <NavDashboard />
 
       <section className="pt-32 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/logs"
-            className="inline-flex items-center text-[#7C3AED] font-semibold mb-10 hover:text-[#1E40AF] text-sm tracking-wider"
+            className="inline-flex items-center text-[#7C3AED] font-semibold mb-10 hover:text-[#1E40AF] hover:translate-x-1 text-sm tracking-wider transition-all duration-300 animate-in fade-in slide-in-from-left-4 duration-500"
           >
             ← BACK TO LOGS
           </Link>
 
-          <article className="bg-white rounded-lg border border-[#E2E8F0] p-10 shadow-sm">
+          <article className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-10 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
             <header className="mb-10">
               <div className="flex items-center gap-6 mb-6">
                 <span className="w-20 h-20 bg-[#1E40AF] border border-[#3B82F6] rounded-lg flex items-center justify-center font-semibold text-white text-lg shadow-md">
                   W{post.week}
                 </span>
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A]">
+                  <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-white">
                     {post.title}
                   </h1>
-                  <p className="text-[#64748B] text-sm mt-2">
+                  <p className="text-[#64748B] dark:text-[#CBD5E1] text-sm mt-2">
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -85,14 +85,14 @@ export default async function LogPostPage({ params }: Props) {
             </header>
 
             <div className="prose prose-lg max-w-none">
-              <p className="text-[#64748B] text-lg leading-relaxed">
+              <p className="text-[#64748B] dark:text-[#CBD5E1] text-lg leading-relaxed">
                 {post.summary}
               </p>
-              <div className="mt-10 p-8 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
-                <p className="text-[#0F172A] font-semibold">
+              <div className="mt-10 p-8 bg-[#F8FAFC] dark:bg-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                <p className="text-[#0F172A] dark:text-white font-semibold">
                   Key highlights:
                 </p>
-                <ul className="mt-6 space-y-3 text-[#64748B]">
+                <ul className="mt-6 space-y-3 text-[#64748B] dark:text-[#CBD5E1]">
                   <li>• Technical implementations and solutions</li>
                   <li>• Challenges encountered and resolutions</li>
                   <li>• Learning outcomes and insights gained</li>
@@ -106,10 +106,10 @@ export default async function LogPostPage({ params }: Props) {
             {prevPost ? (
               <Link
                 href={`/logs/${prevPost.slug}`}
-                className="bg-white px-8 py-4 rounded-lg border border-[#E2E8F0] hover:border-[#7C3AED] hover:shadow-md transition-all flex-1"
+                className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] px-8 py-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:border-[#7C3AED] hover:shadow-md transition-all flex-1"
               >
-                <span className="text-xs text-[#64748B] font-semibold tracking-wider">← PREVIOUS</span>
-                <p className="font-semibold text-[#0F172A] text-sm mt-2">{prevPost.title}</p>
+                <span className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-semibold tracking-wider">← PREVIOUS</span>
+                <p className="font-semibold text-[#0F172A] dark:text-white text-sm mt-2">{prevPost.title}</p>
               </Link>
             ) : (
               <div />
@@ -117,10 +117,10 @@ export default async function LogPostPage({ params }: Props) {
             {nextPost ? (
               <Link
                 href={`/logs/${nextPost.slug}`}
-                className="bg-white px-8 py-4 rounded-lg border border-[#E2E8F0] hover:border-[#7C3AED] hover:shadow-md transition-all text-right flex-1"
+                className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] px-8 py-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:border-[#7C3AED] hover:shadow-md transition-all text-right flex-1"
               >
-                <span className="text-xs text-[#64748B] font-semibold tracking-wider">NEXT →</span>
-                <p className="font-semibold text-[#0F172A] text-sm mt-2">{nextPost.title}</p>
+                <span className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-semibold tracking-wider">NEXT →</span>
+                <p className="font-semibold text-[#0F172A] dark:text-white text-sm mt-2">{nextPost.title}</p>
               </Link>
             ) : (
               <div />
