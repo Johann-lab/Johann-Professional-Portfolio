@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "title": "E-Commerce Platform",
+    "description": "Full-stack shopping solution with payment integration, inventory management, and admin dashboard.",
+    "techStack": ["React", "Node.js", "MongoDB", "Stripe"],
+    "completionDate": "2024-01-15",
+    "category": "Full Stack",
+    "featured": true,
+    "image": "/projects/ecommerce.jpg"
+  },
+  {
+    "id": "2",
+    "title": "SEO Audit Tool",
+    "description": "Comprehensive SEO analysis tool that audits website performance, analyzes keywords, and generates reports.",
+    "techStack": ["Python", "Beautiful Soup", "React", "Chart.js"],
+    "completionDate": "2024-02-20",
+    "category": "SEO Audit",
+    "featured": true,
+    "image": "/projects/seo-audit.jpg"
+  },
+  {
+    "id": "3",
+    "title": "AI Dashboard",
+    "description": "Real-time data visualization dashboard with machine learning predictions and interactive charts.",
+    "techStack": ["Python", "TensorFlow", "D3.js", "Next.js"],
+    "completionDate": "2024-03-10",
+    "category": "Frontend",
+    "featured": false,
+    "image": "/projects/ai-dashboard.jpg"
+  },
+  {
+    "id": "4",
+    "title": "Mobile Fitness App",
+    "description": "Cross-platform fitness tracking application with workout plans, progress tracking, and social features.",
+    "techStack": ["React Native", "Firebase", "Redux"],
+    "completionDate": "2024-04-05",
+    "category": "Frontend",
+    "featured": true,
+    "image": "/projects/fitness-app.jpg"
+  },
+  {
+    "id": "5",
+    "title": "Research Paper Analysis",
+    "description": "NLP-based tool for analyzing academic papers, extracting key insights and generating summaries.",
+    "techStack": ["Python", "NLTK", "OpenAI API", "Flask"],
+    "completionDate": "2024-05-12",
+    "category": "Research",
+    "featured": false,
+    "image": "/projects/research.jpg"
+  },
+  {
+    "id": "6",
+    "title": "Portfolio Website",
+    "description": "Interactive portfolio with 3D animations, lego-style design and optimized for SEO.",
+    "techStack": ["Next.js", "Three.js", "Tailwind CSS", "TypeScript"],
+    "completionDate": "2024-06-01",
+    "category": "Frontend",
+    "featured": true,
+    "image": "/projects/portfolio.jpg"
+  }
+]
