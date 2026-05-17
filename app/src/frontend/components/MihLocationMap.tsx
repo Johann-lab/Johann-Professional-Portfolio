@@ -7,8 +7,8 @@ const DEST_LAT = 16.025327;
 const DEST_LON = 120.4286234;
 const locationName = "Makerspace InnovHub OPC";
 
-const detailedRasterStyle = {
-  version: 8,
+const detailedRasterStyle: { version: 8; sources: Record<string, unknown>; layers: unknown[] } = {
+  version: 8 as const,
   sources: {
     osm: {
       type: "raster",
@@ -30,7 +30,7 @@ const detailedRasterStyle = {
       maxzoom: 19,
     },
   ],
-} as const;
+};
 
 const simpleRasterStyle = {
   version: 8,
@@ -56,7 +56,7 @@ const simpleRasterStyle = {
       maxzoom: 20,
     },
   ],
-} as const;
+};
 
 const MAP_STYLES = {
   street: detailedRasterStyle,
@@ -67,8 +67,8 @@ const routeLineStyle = {
   id: "mih-route-line",
   type: "line" as const,
   layout: {
-    "line-join": "round",
-    "line-cap": "round",
+    "line-join": "round" as const,
+    "line-cap": "round" as const,
   },
   paint: {
     "line-color": "#3B82F6",
@@ -81,8 +81,8 @@ const routeLineStyleBorder = {
   id: "mih-route-line-border",
   type: "line" as const,
   layout: {
-    "line-join": "round",
-    "line-cap": "round",
+    "line-join": "round" as const,
+    "line-cap": "round" as const,
   },
   paint: {
     "line-color": "#1E40AF",
@@ -315,7 +315,7 @@ export default function MihLocationMap() {
           longitude: DEST_LON,
           zoom: 14,
         }}
-        mapStyle={MAP_STYLES[mapStyle]}
+        mapStyle={MAP_STYLES[mapStyle] as never}
         style={{ width: "100%", height: "100%" }}
         scrollZoom
         dragRotate={false}
