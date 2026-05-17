@@ -63,7 +63,7 @@ export default function Home() {
   }, []);
 
   const profileImages = [
-    { image: "/profile-image-1.png", label: "Full-Stack Developer" },
+    { image: "/profile.jpg", label: "Full-Stack Developer" },
     { image: "/profile-image-2.jpg", label: "Code Architect" },
   ];
 
