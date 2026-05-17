@@ -9,6 +9,7 @@ import { ProjectCard } from "@/components/molecules";
 import { Button } from "@/components/atoms";
 import { getFeaturedProjects } from "@/lib/data";
 import { useTheme } from "@/context/ThemeContext";
+import { useToast } from "@/hooks/use-toast";
 
 function LandingSkeleton() {
   return (
@@ -41,14 +42,15 @@ function LandingSkeleton() {
 
 export default function Home() {
   const { isDark } = useTheme();
+  const { toast } = useToast();
   const featuredProjects = getFeaturedProjects();
   const [profileImageIndex, setProfileImageIndex] = useState(0);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [isMihModalOpen, setIsMihModalOpen] = useState(false);
   const [formData, setFormData] = useState({ email: "", message: "" });
-  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [formMessage, setFormMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [countdown, setCountdown] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -243,32 +245,42 @@ export default function Home() {
     e.preventDefault();
     
     if (!formData.email || !formData.message) {
-      setFormStatus("error");
-      setFormMessage("Please fill in all fields");
+      toast({ title: "Error", description: "Please fill in all fields", variant: "error" });
       return;
     }
 
-    setFormStatus("loading");
+    if (!canSubmit) {
+      toast({ title: "Please wait", description: "You can send another message in 1 minute", variant: "error" });
+      return;
+    }
+
+    setCanSubmit(false);
+    setCountdown(60);
+    
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setCanSubmit(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     try {
-      // Simulate sending email (replace with actual API call)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setFormStatus("success");
-      setFormMessage("Thank you! I'll get back to you soon.");
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error("Failed");
+
+      toast({ title: "Success!", description: "Your message has been sent. I'll get back to you soon.", variant: "success" });
       setFormData({ email: "", message: "" });
-      
-      setTimeout(() => {
-        setFormStatus("idle");
-        setFormMessage("");
-      }, 5000);
     } catch {
-      setFormStatus("error");
-      setFormMessage("Failed to send message. Please try again.");
-      setTimeout(() => {
-        setFormStatus("idle");
-        setFormMessage("");
-      }, 3000);
+      toast({ title: "Error", description: "Failed to send message. Please try again.", variant: "error" });
     }
   };
 
@@ -821,61 +833,28 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Status Message */}
-              {formMessage && (
-                <div className={`p-4 rounded-lg border-2 text-sm font-medium animate-in fade-in duration-300 ${
-                  formStatus === "success"
-                    ? isDark
-                      ? "bg-green-900/20 border-green-500/50 text-green-400"
-                      : "bg-green-50 border-green-200 text-green-700"
-                    : isDark
-                    ? "bg-red-900/20 border-red-500/50 text-red-400"
-                    : "bg-red-50 border-red-200 text-red-700"
-                }`}>
-                  {formStatus === "loading" && (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      {formMessage}
-                    </span>
-                  )}
-                  {formStatus !== "loading" && formMessage}
-                </div>
-              )}
-
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={formStatus === "loading"}
-                className={`w-full py-4 rounded-lg font-bold text-white text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 ${
-                  formStatus === "success"
-                    ? "bg-gradient-to-r from-green-500 to-green-600"
-                    : "bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] hover:from-[#1E3A8A] hover:to-[#6D28D9]"
+                disabled={!canSubmit}
+                className={`w-full py-4 rounded-lg font-bold text-white text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
+                  canSubmit 
+                    ? "bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] hover:from-[#1E3A8A] hover:to-[#6D28D9]" 
+                    : "bg-slate-500 cursor-not-allowed"
                 }`}
               >
-                {formStatus === "loading" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Sending...
-                  </span>
-                ) : formStatus === "success" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                    </svg>
-                    Message Sent!
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    Send Message
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                )}
+                <span className="flex items-center justify-center gap-2">
+                  {canSubmit ? (
+                    <>
+                      Send Message
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </>
+                  ) : (
+                    `Please Wait ${countdown} Seconds...`
+                  )}
+                </span>
               </button>
 
               <p className={`text-xs text-center ${

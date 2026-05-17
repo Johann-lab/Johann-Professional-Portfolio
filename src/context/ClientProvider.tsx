@@ -1,7 +1,14 @@
 "use client";
 
 import { ThemeProvider } from "./ThemeContext";
+import { ToastProvider } from "@/hooks/use-toast";
 
 export function ClientProvider({ children }: { children: React.ReactNode }) {
-  return <ThemeProvider>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        {children}
+      </ToastProvider>
+    </ThemeProvider>
+  );
 }
