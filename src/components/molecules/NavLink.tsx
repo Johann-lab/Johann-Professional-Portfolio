@@ -3,7 +3,6 @@ import { useTheme } from "@/context/ThemeContext";
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
-  icon?: string;
   isActive?: boolean;
   onClick?: () => void;
 }
@@ -11,7 +10,6 @@ interface NavLinkProps {
 export default function NavLink({
   href,
   children,
-  icon,
   isActive = false,
   onClick,
 }: NavLinkProps) {

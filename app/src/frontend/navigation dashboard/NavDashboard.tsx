@@ -10,6 +10,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: string;
+  external?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -58,7 +59,6 @@ export default function NavDashboard() {
                 <NavLink
                   key={item.href}
                   href={item.href}
-                  icon={item.icon}
                   isActive={pathname === item.href}
                 >
                   {item.label}
@@ -68,13 +68,13 @@ export default function NavDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href="/#mih-intern"
               className="hidden md:flex items-center gap-2 text-2xl font-bold"
             >
               <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
               <span className="text-[#1E40AF]">Intern</span>
-            </a>
+            </Link>
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-lg transition-all hover:scale-110 ${
@@ -121,14 +121,14 @@ export default function NavDashboard() {
                 {item.icon} {item.label}
               </Link>
             ))}
-            <a
+            <Link
               href="/#mih-intern"
               className="block py-3 px-2 text-lg font-bold mx-2 mb-2"
               onClick={() => setIsMenuOpen(false)}
             >
               <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
               <span className="text-[#1E40AF]">Intern</span>
-            </a>
+            </Link>
           </div>
         )}
       </div>

@@ -1,26 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import NavDashboard from "./navigation dashboard/NavDashboard";
 import MihLocationMap from "./components/MihLocationMap";
 import { ProjectCard } from "@/components/molecules";
 import { Button } from "@/components/atoms";
-import { getProjects, getFeaturedProjects, getLogPosts } from "@/lib/data";
+import { getFeaturedProjects } from "@/lib/data";
 import { useTheme } from "@/context/ThemeContext";
-import type { Project, LogPost } from "@/lib/types";
-
-const legoColors = {
-  primary: "#1E40AF",
-  accent: "#7C3AED",
-  secondary: "#64748B",
-  light: "#F8FAFC",
-};
 
 export default function Home() {
   const { isDark } = useTheme();
-  const projects = getProjects();
   const featuredProjects = getFeaturedProjects();
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [profileImageIndex, setProfileImageIndex] = useState(0);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [isMihModalOpen, setIsMihModalOpen] = useState(false);
@@ -232,7 +224,7 @@ export default function Home() {
         setFormStatus("idle");
         setFormMessage("");
       }, 5000);
-    } catch (error) {
+    } catch {
       setFormStatus("error");
       setFormMessage("Failed to send message. Please try again.");
       setTimeout(() => {
@@ -398,9 +390,11 @@ export default function Home() {
 
             <div className="flex justify-center animate-in fade-in slide-in-from-right-8 duration-700 delay-100 w-full">
               <div className="relative w-full max-w-sm">
-                <img 
-                  src={profileImages[profileImageIndex].image} 
-                  alt="Profile" 
+                <Image 
+                  src={profileImages[profileImageIndex].image}
+                  alt="Profile"
+                  width={400}
+                  height={400}
                   className="w-full rounded-3xl border-4 border-[#7C3AED] shadow-2xl hover:shadow-[0_0_40px_rgba(124,58,237,0.6)] transition-all duration-300 transform hover:scale-105 cursor-pointer object-cover"
                   onMouseEnter={handleProfileHover}
                 />
@@ -560,15 +554,13 @@ export default function Home() {
                   }`}>{weekDetails[selectedWeek - 1].desc}</p>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setSelectedWeek(null);
-                  window.location.href = '/logs';
-                }}
-                className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
+              <Link
+                href="/logs"
+                className="block w-full mt-6 px-6 py-3 text-center bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
+                onClick={() => setSelectedWeek(null)}
               >
                 Go to Logs
-              </button>
+              </Link>
             </div>
           </div>
         </div>

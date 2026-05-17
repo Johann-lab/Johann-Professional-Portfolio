@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Project } from "@/lib/types";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -112,10 +113,12 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {isHovered && (
           <div className="absolute inset-0 bg-linear-to-br from-[#1E40AF]/5 to-[#7C3AED]/5 animate-pulse" />
         )}
-        {(project.logo || project.image) && (
-          <img
-            src={project.logo || project.image}
+        {project.image && (
+          <Image
+            src={project.image}
             alt={project.title + " logo"}
+            width={112}
+            height={112}
             className="w-28 h-28 object-contain z-10"
           />
         )}
