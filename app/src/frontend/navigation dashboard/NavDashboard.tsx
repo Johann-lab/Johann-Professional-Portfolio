@@ -128,7 +128,7 @@ export default function NavDashboard({ onOpenMihModal }: NavDashboardProps) {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {item.icon} {item.label}
+                {item.label}
               </Link>
             ))}
             <Link
