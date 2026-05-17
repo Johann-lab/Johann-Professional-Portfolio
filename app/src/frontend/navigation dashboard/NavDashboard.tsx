@@ -10,14 +10,12 @@ interface NavItem {
   label: string;
   href: string;
   icon: string;
-  external?: boolean;
 }
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/", icon: "🏠" },
   { label: "Work", href: "/work", icon: "💼" },
   { label: "Logs", href: "/logs", icon: "📝" },
-  { label: "MIH Intern", href: "https://mihintern.com", icon: "🚀", external: true },
 ];
 
 export default function NavDashboard() {
@@ -33,9 +31,13 @@ export default function NavDashboard() {
     }`}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center">
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] bg-clip-text text-transparent">
-              Johann.
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-sm font-bold text-white shadow-md">
+              JG
+            </div>
+            <span className="text-xl font-semibold tracking-tight">
+              <span className={isDark ? "text-white" : "text-black"}>Johann</span>{" "}
+              <span className="text-[#1E40AF]">Gacayan</span>
             </span>
           </div>
 
@@ -65,7 +67,14 @@ export default function NavDashboard() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <a
+              href="/#mih-intern"
+              className="hidden md:flex items-center gap-2 text-2xl font-bold"
+            >
+              <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
+              <span className="text-[#1E40AF]">Intern</span>
+            </a>
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-lg transition-all hover:scale-110 ${
@@ -99,31 +108,27 @@ export default function NavDashboard() {
         {isMenuOpen && (
           <div className={`md:hidden pb-6 ${isDark ? "bg-[#0F172A]" : "bg-white"}`}>
             {navItems.map((item) => (
-              item.external ? (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block py-3 px-2 font-medium transition-all text-sm rounded-lg mx-2 mb-2 bg-gradient-to-r from-[#1E40AF] to-[#7C3AED] text-white`}
-                >
-                  {item.icon} {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`block py-3 px-2 font-medium transition-all text-sm hover:text-[#1E40AF] rounded-lg mx-2 mb-2 ${
-                    pathname === item.href
-                      ? "text-[#1E40AF]"
-                      : isDark ? "text-white" : "text-[#0F172A]"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.icon} {item.label}
-                </Link>
-              )
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`block py-3 px-2 font-medium transition-all text-sm hover:text-[#1E40AF] rounded-lg mx-2 mb-2 ${
+                  pathname === item.href
+                    ? "text-[#1E40AF]"
+                    : isDark ? "text-white" : "text-[#0F172A]"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.icon} {item.label}
+              </Link>
             ))}
+            <a
+              href="/#mih-intern"
+              className="block py-3 px-2 text-lg font-bold mx-2 mb-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
+              <span className="text-[#1E40AF]">Intern</span>
+            </a>
           </div>
         )}
       </div>

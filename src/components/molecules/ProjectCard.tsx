@@ -112,6 +112,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {isHovered && (
           <div className="absolute inset-0 bg-linear-to-br from-[#1E40AF]/5 to-[#7C3AED]/5 animate-pulse" />
         )}
+        {(project.logo || project.image) && (
+          <img
+            src={project.logo || project.image}
+            alt={project.title + " logo"}
+            className="w-28 h-28 object-contain z-10"
+          />
+        )}
       </div>
       <div className="p-6">
         <h3 className={`text-xl font-semibold mb-2 group-hover:text-[#1E40AF] transition-colors ${

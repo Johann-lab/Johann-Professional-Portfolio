@@ -7,7 +7,8 @@
     "completionDate": "2024-01-15",
     "category": "Full Stack",
     "featured": true,
-    "image": "/projects/sillag.jpg"
+    "image": "/sillaglogo.png",
+    "logo": "/sillaglogo.png"
   },
   {
     "id": "2",
@@ -17,7 +18,8 @@
     "completionDate": "2024-02-20",
     "category": "Frontend",
     "featured": true,
-    "image": "/projects/promptgraph.jpg"
+    "image": "/logo.png",
+    "logo": "/logo.png"
   },
   {
     "id": "6",
@@ -27,36 +29,7 @@
     "completionDate": "2024-06-01",
     "category": "Frontend",
     "featured": true,
-    "image": "/projects/portfolio.jpg"
-  },
-  {
-    "id": "3",
-    "title": "AI Dashboard",
-    "description": "Real-time data visualization dashboard with machine learning predictions and interactive charts.",
-    "techStack": ["Python", "TensorFlow", "D3.js", "Next.js"],
-    "completionDate": "2024-03-10",
-    "category": "Frontend",
-    "featured": false,
-    "image": "/projects/ai-dashboard.jpg"
-  },
-  {
-    "id": "4",
-    "title": "Mobile Fitness App",
-    "description": "Cross-platform fitness tracking application with workout plans, progress tracking, and social features.",
-    "techStack": ["React Native", "Firebase", "Redux"],
-    "completionDate": "2024-04-05",
-    "category": "Frontend",
-    "featured": false,
-    "image": "/projects/fitness-app.jpg"
-  },
-  {
-    "id": "5",
-    "title": "E-Commerce Platform",
-    "description": "Full-stack shopping solution with payment integration, inventory management, and admin dashboard.",
-    "techStack": ["React", "Node.js", "MongoDB", "Stripe"],
-    "completionDate": "2024-05-12",
-    "category": "Full Stack",
-    "featured": false,
-    "image": "/projects/ecommerce.jpg"
+    "image": "/work/portfolio.jpg"
   }
 ]
+  

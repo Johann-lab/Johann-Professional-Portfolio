@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import NavDashboard from "./navigation dashboard/NavDashboard";
+import MihLocationMap from "./components/MihLocationMap";
 import { ProjectCard } from "@/components/molecules";
 import { Button } from "@/components/atoms";
 import { getProjects, getFeaturedProjects, getLogPosts } from "@/lib/data";
@@ -22,6 +23,7 @@ export default function Home() {
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [profileImageIndex, setProfileImageIndex] = useState(0);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [isMihModalOpen, setIsMihModalOpen] = useState(false);
   const [formData, setFormData] = useState({ email: "", message: "" });
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
@@ -68,7 +70,7 @@ export default function Home() {
   const contactLinks = [
     {
       icon: (
-        <img src="https://thesvg.org/icons/gmail/default.svg" alt="Gmail" className="w-8 h-8 brightness-0 invert flex-shrink-0" />
+        <img src="https://thesvg.org/icons/gmail/default.svg" alt="Gmail" className="w-6 h-6 brightness-0 invert shrink-0" />
       ),
       href: "mailto:johann@example.com",
       label: "Gmail",
@@ -78,7 +80,7 @@ export default function Home() {
     },
     {
       icon: (
-        <img src="https://thesvg.org/icons/linkedin/default.svg" alt="LinkedIn" className="w-8 h-8 brightness-0 invert flex-shrink-0" />
+        <img src="https://thesvg.org/icons/linkedin/default.svg" alt="LinkedIn" className="w-6 h-6 brightness-0 invert shrink-0" />
       ),
       href: "https://www.linkedin.com/in/gacayan-johann-kien-s-9a4434283/",
       label: "LinkedIn",
@@ -89,7 +91,7 @@ export default function Home() {
     },
     {
       icon: (
-        <img src="https://thesvg.org/icons/discord/default.svg" alt="Discord" className="w-8 h-8 brightness-0 invert flex-shrink-0" />
+        <img src="https://thesvg.org/icons/discord/default.svg" alt="Discord" className="w-6 h-6 brightness-0 invert shrink-0" />
       ),
       href: "https://discord.com/users/726681678894071889",
       label: "Discord",
@@ -100,7 +102,7 @@ export default function Home() {
     },
     {
       icon: (
-        <img src="https://thesvg.org/icons/github/default.svg" alt="GitHub" className="w-8 h-8 flex-shrink-0" />
+        <img src="https://thesvg.org/icons/github/default.svg" alt="GitHub" className="w-6 h-6 shrink-0" />
       ),
       href: "https://github.com/Johann-lab",
       label: "GitHub",
@@ -112,7 +114,7 @@ export default function Home() {
     },
     {
       icon: (
-        <img src="https://thesvg.org/icons/facebook/default.svg" alt="Facebook" className="w-8 h-8 flex-shrink-0" />
+        <img src="https://thesvg.org/icons/facebook/default.svg" alt="Facebook" className="w-6 h-6 shrink-0" />
       ),
       href: "https://www.facebook.com/JohannGacayan/",
       label: "Facebook",
@@ -123,7 +125,7 @@ export default function Home() {
     },
     {
       icon: (
-        <img src="https://thesvg.org/icons/vercel/default.svg" alt="Vercel" className="w-8 h-8 brightness-0 invert flex-shrink-0" />
+        <img src="https://thesvg.org/icons/vercel/default.svg" alt="Vercel" className="w-6 h-6 brightness-0 invert shrink-0" />
       ),
       href: "https://vercel.com/johann-labs-projects",
       label: "Vercel",
@@ -137,6 +139,75 @@ export default function Home() {
   const handleProfileHover = () => {
     setProfileImageIndex((prev) => (prev + 1) % profileImages.length);
   };
+
+  const mihSocialLinks = [
+    {
+      icon: (
+        <img src="https://thesvg.org/icons/facebook/default.svg" alt="Facebook" className="w-4 h-4 flex-shrink-0" />
+      ),
+      href: "https://www.facebook.com/makerspaceinnovhub",
+      label: "Facebook",
+      target: "_blank",
+      username: "makerspaceinnovhub",
+      bgColorLight: "bg-blue-500",
+      bgColorDark: "bg-blue-600"
+    },
+    {
+      icon: (
+        <img src="https://thesvg.org/icons/linkedin/default.svg" alt="LinkedIn" className="w-4 h-4 brightness-0 invert flex-shrink-0" />
+      ),
+      href: "https://www.linkedin.com/company/makerspace-innovhub-opc/people/",
+      label: "LinkedIn",
+      target: "_blank",
+      username: "Makerspace InnovHub",
+      bgColorLight: "bg-blue-700",
+      bgColorDark: "bg-blue-800"
+    },
+    {
+      icon: (
+        <img src="https://thesvg.org/icons/x/default.svg" alt="X" className="w-4 h-4 flex-shrink-0" />
+      ),
+      href: "https://x.com/makerspaceinnov",
+      label: "X",
+      target: "_blank",
+      username: "makerspaceinnov",
+      bgColorLight: "bg-sky-500",
+      bgColorDark: "bg-sky-600"
+    },
+    {
+      icon: (
+        <img src="https://thesvg.org/icons/whatsapp/default.svg" alt="WhatsApp" className="w-4 h-4 flex-shrink-0" />
+      ),
+      href: "https://wa.me/639171798813",
+      label: "WhatsApp",
+      target: "_blank",
+      username: "+63917-179-8813",
+      bgColorLight: "bg-emerald-600",
+      bgColorDark: "bg-emerald-700"
+    },
+  ];
+
+  const mihContacts = [
+    {
+      icon: <img src="https://thesvg.org/icons/gmail/default.svg" alt="Gmail" className="w-4 h-4 brightness-0 invert" />,
+      href: "mailto:info@makerspace.ph",
+      label: "Gmail",
+      username: "info@makerspace.ph",
+      bgColorLight: "bg-red-500",
+      bgColorDark: "bg-red-600",
+    },
+    {
+      icon: <img src="/logos/makerspacelogo.png" alt="Makerspace" className="w-4 h-4 object-contain" />,
+      href: "https://www.makerspace.ph/",
+      label: "Open MIH",
+      target: "_blank",
+      username: "Makerspace InnovHub OPC",
+      bgColorLight: "bg-gradient-to-br from-[#1E40AF] to-[#7C3AED]",
+      bgColorDark: "bg-[#1E40AF]",
+    },
+  ];
+
+  const socialsCombined = [...mihContacts, ...mihSocialLinks];
 
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -186,6 +257,17 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const openModalFromHash = () => {
+      setIsMihModalOpen(window.location.hash === "#mih-intern");
+    };
+
+    openModalFromHash();
+    window.addEventListener("hashchange", openModalFromHash);
+
+    return () => window.removeEventListener("hashchange", openModalFromHash);
+  }, []);
+
   return (
     <div className={`min-h-screen animate-in fade-in duration-1000 transition-colors ${
       isDark 
@@ -193,6 +275,94 @@ export default function Home() {
         : "bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF]"
     }`}>
       <NavDashboard />
+
+      {isMihModalOpen && (
+        <div className="fixed inset-0 z-[60] grid place-items-center px-4 py-6">
+          <button
+            aria-label="Close MIH Intern modal"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => {
+              setIsMihModalOpen(false);
+              window.history.replaceState(null, "", window.location.pathname + window.location.search);
+            }}
+          />
+          <div
+            id="mih-intern"
+            className={`relative z-10 w-full max-w-4xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border shadow-2xl ${
+              isDark ? "bg-[#0F172A] border-[#334155]" : "bg-white border-[#E2E8F0]"
+            }`}
+          >
+            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-white/10">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-[#1E40AF] font-semibold">MIH Intern</p>
+                <h2 className={`mt-2 text-2xl font-bold ${isDark ? "text-white" : "text-[#0F172A]"}`}>
+                  Public details
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setIsMihModalOpen(false);
+                  window.history.replaceState(null, "", window.location.pathname + window.location.search);
+                }}
+                className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${
+                  isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-[#0F172A]/10 text-[#0F172A] hover:bg-[#0F172A]/20"
+                }`}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="px-6 py-6 space-y-6">
+              <div className={`rounded-3xl border p-6 md:p-8 ${isDark ? "border-white/10 bg-white/5" : "border-[#E2E8F0] bg-[#F8FAFC]"}`}>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#1E40AF]">Location</p>
+                <div className="mt-4 flex items-start gap-3">
+                  <div className="mt-1 h-3 w-3 rounded-full bg-[#1E40AF] shadow-[0_0_0_6px_rgba(30,64,175,0.15)]" />
+                  <div>
+                    <p className={`text-2xl font-bold ${isDark ? "text-white" : "text-[#0F172A]"}`}>
+                      Makerspace Innovhub OPC
+                    </p>
+                    <p className={`mt-2 text-sm leading-6 ${isDark ? "text-[#CBD5E1]" : "text-[#475569]"}`}>
+                      The location is shown below on the map for quick reference.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <MihLocationMap />
+              </div>
+
+              <div className={`rounded-3xl border p-6 md:p-8 ${isDark ? "border-white/10 bg-white/5" : "border-[#E2E8F0] bg-[#F8FAFC]"}`}>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#1E40AF]">Makerspace InnovHub OPC</p>
+                <div className="mt-5 flex flex-wrap gap-4">
+                  {socialsCombined.map((item, i) => (
+                    <div key={i} className="group">
+                      <a
+                        href={item.href}
+                        target={item.target}
+                        rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                        title={item.label}
+                        className={`inline-flex items-center gap-4 p-4 rounded-full text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:brightness-110 border-2 border-transparent group-hover:px-6 ${
+                          isDark ? "group-hover:border-white group-hover:shadow-white/30" : "group-hover:border-[#1E40AF] group-hover:shadow-black/20"
+                        }`}
+                      >
+                        <div className={`w-8 h-8 flex items-center justify-center rounded-full ${isDark ? item.bgColorDark : item.bgColorLight} shadow-inner`}>
+                          {item.icon}
+                        </div>
+                        <span className={`text-sm font-semibold ${isDark ? "text-white" : "text-[#1E40AF]"} opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap hidden group-hover:inline-block`}>
+                          {item.username}
+                        </span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Open MIH footer button removed per request */}
+          </div>
+        </div>
+      )}
 
       <section
         id="home"
@@ -206,14 +376,10 @@ export default function Home() {
               <div className="inline-block bg-[#1E40AF] text-white px-4 py-2 font-semibold text-xs tracking-wider rounded-md shadow-sm">
                 FULL-STACK DEVELOPER
               </div>
-              <h1 className={`text-5xl md:text-6xl font-bold leading-tight ${
-                isDark ? "text-white" : "text-[#0F172A]"
-              }`}>
-                Building
+              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+                <span className={isDark ? "text-white" : "text-black"}>Johann</span>
                 <br />
-                <span className="text-[#7C3AED]">Scalable</span>
-                <br />
-                Solutions
+                <span className="text-[#1E40AF]">Gacayan</span>
               </h1>
               <p className={`text-lg max-w-md leading-relaxed ${
                 isDark ? "text-[#CBD5E1]" : "text-[#475569]"
@@ -224,7 +390,7 @@ export default function Home() {
                 <Button href="/work" variant="primary" size="lg" className="hover:scale-105 transition-transform">
                   View Work
                 </Button>
-                <Button href="/logs/week-1-introduction" variant="outline" size="lg" className="hover:scale-105 transition-transform">
+                <Button href="/logs" variant="outline" size="lg" className="hover:scale-105 transition-transform">
                   Read Logs
                 </Button>
               </div>
@@ -505,7 +671,7 @@ export default function Home() {
                   style={{ animationDelay: `${i * 100}ms` }}
                 >
                   {contact.icon}
-                  <span className="text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap hidden group-hover:inline-block">
+                  <span className={`text-sm font-semibold ${isDark ? "text-white" : "text-[#1E40AF]"} opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap hidden group-hover:inline-block`}>
                     {contact.username}
                   </span>
                 </a>
@@ -668,13 +834,13 @@ export default function Home() {
                 target={contact.target}
                 rel={contact.target === "_blank" ? "noopener noreferrer" : undefined}
                 title={contact.label}
-                className={`inline-flex items-center gap-3 p-4 rounded-full ${isDark ? contact.bgColorDark : contact.bgColorLight} ${contact.textColor || "text-white"} shadow-lg hover:shadow-2xl transition-all duration-300 hover:brightness-110 border-2 border-transparent group-hover:px-6 ${
+                className={`inline-flex items-center gap-3 p-4 rounded-full ${isDark ? contact.bgColorDark : contact.bgColorLight} ${isDark ? "text-white" : (contact.textColor || "text-white")} shadow-lg hover:shadow-2xl transition-all duration-300 hover:brightness-110 border-2 border-transparent group-hover:px-6 ${
                   isDark ? "group-hover:border-white group-hover:shadow-white/30" : "group-hover:border-[#1E40AF] group-hover:shadow-black/20"
                 }`}
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 {contact.icon}
-                <span className="text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap hidden group-hover:inline-block">
+                <span className={`text-sm font-semibold ${isDark ? "text-white" : "text-[#1E40AF]"} opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap hidden group-hover:inline-block`}>
                   {contact.username}
                 </span>
               </a>
