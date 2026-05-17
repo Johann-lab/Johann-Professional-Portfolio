@@ -38,11 +38,11 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(self)",
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob data https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://basemaps.cartocdn.com https://server.arcgisonline.com; img-src 'self' blob data https:; font-src 'self' data:; connect-src 'self' https: https://router.project-osrm.org; frame-ancestors 'none';",
           },
         ],
       },

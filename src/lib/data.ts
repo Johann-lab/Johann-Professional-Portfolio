@@ -27,7 +27,7 @@ export function getAllTechStacks(): string[] {
   return [...new Set(stacks)];
 }
 
-export async function getLogPosts(): Promise<LogPost[]> {
+export function getLogPosts(): LogPost[] {
   const posts: LogPost[] = [
     {
       slug: "week-1-foundation-architecture",

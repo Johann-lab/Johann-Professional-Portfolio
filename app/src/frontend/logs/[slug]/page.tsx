@@ -1,139 +1,117 @@
-import { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import NavDashboard from "../../navigation dashboard/NavDashboard";
-import { getLogPosts, getLogPostBySlug } from "@/lib/data";
+"use client";
 
-interface Props {
+import Link from "next/link";
+import { use } from "react";
+import NavDashboard from "../../navigation dashboard/NavDashboard";
+import { getLogPosts } from "@/lib/data";
+import { useTheme } from "@/context/ThemeContext";
+
+interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const posts = await getLogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getLogPostBySlug(slug);
-  
-  if (!post) {
-    return { title: "Log Not Found" };
-  }
-
-  return {
-    title: `${post.title} | Johann's Internship Logs`,
-    description: post.summary,
-  };
-}
-
-export default async function LogPostPage({ params }: Props) {
-  const { slug } = await params;
-  const post = await getLogPostBySlug(slug);
+export default function LogPostPage({ params }: PageProps) {
+  const resolvedParams = use(params);
+  const slug = resolvedParams.slug;
+  const { isDark } = useTheme();
+  const logPosts = getLogPosts();
+  const post = logPosts.find((p) => p.slug === slug);
 
   if (!post) {
-    notFound();
+    return (
+      <div
+        className={`min-h-screen ${
+          isDark
+            ? "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A]"
+            : "bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF]"
+        }`}
+      >
+        <NavDashboard />
+        <div className="pt-32 px-4 text-center">
+          <h1 className={`text-2xl font-bold mb-4 ${isDark ? "text-white" : "text-[#0F172A]"}`}>
+            Post not found
+          </h1>
+          <Link href="/logs" className="text-[#1E40AF] hover:underline">
+            ← Back to Logs
+          </Link>
+        </div>
+      </div>
+    );
   }
-
-  const posts = await getLogPosts();
-  const currentIndex = posts.findIndex((p) => p.slug === slug);
-  const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
-  const nextPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen animate-in fade-in duration-1000 bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF] dark:from-[#0F172A] dark:via-[#1E293B] dark:to-[#0F172A] transition-colors">
+    <div
+      className={`min-h-screen transition-colors ${
+        isDark
+          ? "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A]"
+          : "bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF]"
+      }`}
+    >
       <NavDashboard />
 
-      <section className="pt-32 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <article className="pt-32 pb-20 px-4">
+        <div className="max-w-3xl mx-auto">
           <Link
             href="/logs"
-            className="inline-flex items-center text-[#7C3AED] font-semibold mb-10 hover:text-[#1E40AF] hover:translate-x-1 text-sm tracking-wider transition-all duration-300 animate-in fade-in slide-in-from-left-4 duration-500"
+            className={`inline-flex items-center gap-2 mb-8 text-sm font-medium hover:text-[#1E40AF] transition-colors ${
+              isDark ? "text-[#CBD5E1]" : "text-[#64748B]"
+            }`}
           >
-            ← BACK TO LOGS
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Logs
           </Link>
 
-          <article className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-10 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-            <header className="mb-10">
-              <div className="flex items-center gap-6 mb-6">
-                <span className="w-20 h-20 bg-[#1E40AF] border border-[#3B82F6] rounded-lg flex items-center justify-center font-semibold text-white text-lg shadow-md">
-                  W{post.week}
-                </span>
-                <div>
-                  <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-white">
-                    {post.title}
-                  </h1>
-                  <p className="text-[#64748B] dark:text-[#CBD5E1] text-sm mt-2">
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#1E40AF] to-[#7C3AED] flex items-center justify-center text-white font-bold">
+                {post.week}
               </div>
-              <div className="flex gap-2 flex-wrap">
-              {post.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 text-xs bg-[#1E40AF] text-white rounded-md font-semibold"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </header>
-
-            <div className="prose prose-lg max-w-none">
-              <p className="text-[#64748B] dark:text-[#CBD5E1] text-lg leading-relaxed">
-                {post.summary}
-              </p>
-              <div className="mt-10 p-8 bg-[#F8FAFC] dark:bg-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
-                <p className="text-[#0F172A] dark:text-white font-semibold">
-                  Key highlights:
+              <div>
+                <p className="text-sm font-semibold text-[#7C3AED] uppercase tracking-wider">Week {post.week}</p>
+                <p className={`text-sm ${isDark ? "text-[#64748B]" : "text-[#94A3B8]"}`}>
+                  {new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                 </p>
-                <ul className="mt-6 space-y-3 text-[#64748B] dark:text-[#CBD5E1]">
-                  <li>• Technical implementations and solutions</li>
-                  <li>• Challenges encountered and resolutions</li>
-                  <li>• Learning outcomes and insights gained</li>
-                  <li>• Code patterns and best practices applied</li>
-                </ul>
               </div>
             </div>
-          </article>
 
-          <div className="flex justify-between gap-6 mt-12">
-            {prevPost ? (
-              <Link
-                href={`/logs/${prevPost.slug}`}
-                className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] px-8 py-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:border-[#7C3AED] hover:shadow-md transition-all flex-1"
-              >
-                <span className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-semibold tracking-wider">← PREVIOUS</span>
-                <p className="font-semibold text-[#0F172A] dark:text-white text-sm mt-2">{prevPost.title}</p>
-              </Link>
-            ) : (
-              <div />
-            )}
-            {nextPost ? (
-              <Link
-                href={`/logs/${nextPost.slug}`}
-                className="bg-gradient-to-br from-white to-[#F8FAFC] dark:from-[#1E293B] dark:to-[#0F172A] px-8 py-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:border-[#7C3AED] hover:shadow-md transition-all text-right flex-1"
-              >
-                <span className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-semibold tracking-wider">NEXT →</span>
-                <p className="font-semibold text-[#0F172A] dark:text-white text-sm mt-2">{nextPost.title}</p>
-              </Link>
-            ) : (
-              <div />
-            )}
+            <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${isDark ? "text-white" : "text-[#0F172A]"}`}>
+              {post.title}
+            </h1>
+
+            <div className="flex gap-2 flex-wrap">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 text-sm font-medium rounded-full bg-[#1E40AF]/10 text-[#1E40AF]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div
+            className={`prose prose-lg max-w-none ${
+              isDark ? "prose-invert prose-invert" : ""
+            }`}
+          >
+            <p className={`text-lg leading-relaxed mb-8 ${isDark ? "text-[#CBD5E1]" : "text-[#475569]"}`}>
+              {post.summary}
+            </p>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-[#334155]/30">
+            <Link
+              href="/logs"
+              className="inline-flex items-center gap-2 text-[#1E40AF] font-semibold hover:underline"
+            >
+              ← View All Logs
+            </Link>
           </div>
         </div>
-      </section>
-
-      <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-[#94A3B8] py-8 text-center mt-16 border-t border-[#334155]">
-        <p className="font-medium text-sm">
-          © 2024 Johann Gacayan. Built with precision and attention to detail.
-        </p>
-      </footer>
+      </article>
     </div>
   );
 }

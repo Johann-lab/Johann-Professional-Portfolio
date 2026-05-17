@@ -266,7 +266,7 @@ export default function Home() {
         ? "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A]" 
         : "bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#FFFFFF]"
     }`}>
-      <NavDashboard />
+      <NavDashboard onOpenMihModal={() => setIsMihModalOpen(true)} />
 
       {isMihModalOpen && (
         <div className="fixed inset-0 z-[60] grid place-items-center px-4 py-6">

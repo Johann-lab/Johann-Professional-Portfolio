@@ -13,13 +13,17 @@ interface NavItem {
   external?: boolean;
 }
 
+interface NavDashboardProps {
+  onOpenMihModal?: () => void;
+}
+
 const navItems: NavItem[] = [
   { label: "Home", href: "/", icon: "🏠" },
   { label: "Work", href: "/work", icon: "💼" },
   { label: "Logs", href: "/logs", icon: "📝" },
 ];
 
-export default function NavDashboard() {
+export default function NavDashboard({ onOpenMihModal }: NavDashboardProps) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
@@ -71,6 +75,12 @@ export default function NavDashboard() {
             <Link
               href="/#mih-intern"
               className="hidden md:flex items-center gap-2 text-2xl font-bold"
+              onClick={(e) => {
+                if (onOpenMihModal) {
+                  e.preventDefault();
+                  onOpenMihModal();
+                }
+              }}
             >
               <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
               <span className="text-[#1E40AF]">Intern</span>
@@ -124,7 +134,13 @@ export default function NavDashboard() {
             <Link
               href="/#mih-intern"
               className="block py-3 px-2 text-lg font-bold mx-2 mb-2"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => {
+                setIsMenuOpen(false);
+                if (onOpenMihModal) {
+                  e.preventDefault();
+                  onOpenMihModal();
+                }
+              }}
             >
               <span className={isDark ? "text-white" : "text-black"}>MIH</span>{" "}
               <span className="text-[#1E40AF]">Intern</span>
