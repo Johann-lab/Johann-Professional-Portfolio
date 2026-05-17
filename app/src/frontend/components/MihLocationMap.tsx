@@ -66,20 +66,28 @@ const MAP_STYLES = {
 const routeLineStyle = {
   id: "mih-route-line",
   type: "line" as const,
+  layout: {
+    "line-join": "round",
+    "line-cap": "round",
+  },
   paint: {
     "line-color": "#3B82F6",
-    "line-width": 5,
-    "line-opacity": 0.9,
+    "line-width": 6,
+    "line-opacity": 1,
   },
 };
 
 const routeLineStyleBorder = {
   id: "mih-route-line-border",
   type: "line" as const,
+  layout: {
+    "line-join": "round",
+    "line-cap": "round",
+  },
   paint: {
     "line-color": "#1E40AF",
-    "line-width": 8,
-    "line-opacity": 0.4,
+    "line-width": 10,
+    "line-opacity": 0.5,
   },
 };
 
@@ -89,12 +97,43 @@ export default function MihLocationMap() {
   const mapRef = useRef<MapRef>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [routeGeoJson, setRouteGeoJson] = useState<RouteGeoJson | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
   const [locationError, setLocationError] = useState("");
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready">("idle");
   const [mapStyle, setMapStyle] = useState<"street" | "satellite">("street");
   const [hasRetried, setHasRetried] = useState(false);
 
-  const loadRoute = async (userLat: number, userLon: number) => {
+  const createRouteGeoJson = (coordinates: [number, number][]): RouteGeoJson => ({
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates,
+        },
+      },
+    ],
+  });
+
+  const fitMapToPoints = (userLat: number, userLon: number) => {
+    const southWest: [number, number] = [
+      Math.min(userLon, DEST_LON),
+      Math.min(userLat, DEST_LAT),
+    ];
+    const northEast: [number, number] = [
+      Math.max(userLon, DEST_LON),
+      Math.max(userLat, DEST_LAT),
+    ];
+
+    mapRef.current?.fitBounds([southWest, northEast], {
+      padding: 100,
+      duration: 2000,
+    });
+  };
+
+  const loadRoute = async (userLat: number, userLon: number): Promise<void> => {
     try {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${userLon},${userLat};${DEST_LON},${DEST_LAT}?overview=full&geometries=geojson`
@@ -112,51 +151,27 @@ export default function MihLocationMap() {
         throw new Error("No route returned");
       }
 
-      setRouteGeoJson({
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "LineString",
-              coordinates,
-            },
-          },
-        ],
+      const distanceMeters = route?.distance || 0;
+      const durationSeconds = route?.duration || 0;
+      const distanceKm = (distanceMeters / 1000).toFixed(1);
+      const durationMin = Math.round(durationSeconds / 60);
+
+      setRouteInfo({
+        distance: `${distanceKm} km`,
+        duration: durationMin < 60 
+          ? `${durationMin} min` 
+          : `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`,
       });
 
-      // fitBounds expects [southWest, northEast]; normalize to avoid invalid bounds ordering.
-      const southWest: [number, number] = [
-        Math.min(userLon, DEST_LON),
-        Math.min(userLat, DEST_LAT),
-      ];
-      const northEast: [number, number] = [
-        Math.max(userLon, DEST_LON),
-        Math.max(userLat, DEST_LAT),
-      ];
-
-      mapRef.current?.fitBounds([southWest, northEast], {
-        padding: 100,
-        duration: 2000,
-      });
-    } catch {
-      setRouteGeoJson({
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "LineString",
-              coordinates: [
-                [userLon, userLat],
-                [DEST_LON, DEST_LAT],
-              ],
-            },
-          },
-        ],
-      });
+      setRouteGeoJson(createRouteGeoJson(coordinates));
+      fitMapToPoints(userLat, userLon);
+    } catch (err) {
+      console.error("Route load error:", err);
+      setRouteGeoJson(createRouteGeoJson([
+        [userLon, userLat],
+        [DEST_LON, DEST_LAT],
+      ]));
+      fitMapToPoints(userLat, userLon);
       setLocationError("Route could not be loaded. Your location is shown on the map.");
     }
   };
@@ -169,6 +184,8 @@ export default function MihLocationMap() {
 
     setLocationStatus("loading");
     setLocationError("");
+    setRouteInfo(null);
+    setRouteGeoJson(null);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -177,9 +194,14 @@ export default function MihLocationMap() {
 
         const newUserLocation = { lat: userLat, lng: userLon };
         setUserLocation(newUserLocation);
-
-        loadRoute(userLat, userLon);
+        setRouteGeoJson(createRouteGeoJson([
+          [userLon, userLat],
+          [DEST_LON, DEST_LAT],
+        ]));
+        fitMapToPoints(userLat, userLon);
         setLocationStatus("ready");
+
+        void loadRoute(userLat, userLon);
       },
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
@@ -241,12 +263,24 @@ export default function MihLocationMap() {
       )}
 
       {locationStatus === "ready" && (
-        <div className="absolute left-4 top-4 z-10 flex items-center gap-2 rounded-lg bg-[#0F172A]/90 px-3 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-          </span>
-          Location enabled
+        <div className="absolute left-4 top-4 z-10 flex flex-col gap-2">
+          <div className="flex items-center gap-2 rounded-lg bg-[#0F172A]/90 px-3 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+            </span>
+            Location enabled
+          </div>
+          {routeInfo && (
+            <div className="flex items-center gap-3 rounded-lg bg-[#0F172A]/90 px-3 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-sm">
+              <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              <span className="text-green-400 font-bold">{routeInfo.distance}</span>
+              <span className="text-gray-400">•</span>
+              <span className="text-blue-400 font-bold">{routeInfo.duration}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -292,10 +326,18 @@ export default function MihLocationMap() {
         {routeGeoJson && (
           <>
             <Source id="mih-route-border" type="geojson" data={routeGeoJson}>
-              <Layer {...routeLineStyleBorder} />
+              <Layer
+                {...routeLineStyleBorder}
+                minzoom={0}
+                maxzoom={22}
+              />
             </Source>
             <Source id="mih-route" type="geojson" data={routeGeoJson}>
-              <Layer {...routeLineStyle} />
+              <Layer
+                {...routeLineStyle}
+                minzoom={0}
+                maxzoom={22}
+              />
             </Source>
           </>
         )}
