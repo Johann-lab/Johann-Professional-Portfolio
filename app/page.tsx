@@ -5,6 +5,7 @@ export const metadata = {
   description: "Professional portfolio showcasing projects, skills, and internship journey.",
 };
 
+
 export default function Home() {
   return <HomePage />;
 }
