@@ -10,6 +10,35 @@ import { Button } from "@/components/atoms";
 import { getFeaturedProjects } from "@/lib/data";
 import { useTheme } from "@/context/ThemeContext";
 
+function LandingSkeleton() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-[#FFFFFF] to-[#F8FAFC]">
+      <div className="pt-32 pb-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-6">
+              <div className="h-8 w-40 bg-gray-300 rounded animate-pulse" />
+              <div className="space-y-3">
+                <div className="h-16 w-48 bg-gray-300 rounded animate-pulse" />
+                <div className="h-16 w-32 bg-gray-300 rounded animate-pulse" />
+              </div>
+              <div className="h-6 w-80 bg-gray-300 rounded animate-pulse" />
+              <div className="h-6 w-72 bg-gray-300 rounded animate-pulse" />
+              <div className="flex gap-4">
+                <div className="h-12 w-32 bg-gray-300 rounded-lg animate-pulse" />
+                <div className="h-12 w-32 bg-gray-300 rounded-lg animate-pulse" />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-80 h-80 bg-gray-300 rounded-3xl animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const { isDark } = useTheme();
   const featuredProjects = getFeaturedProjects();
@@ -19,8 +48,17 @@ export default function Home() {
   const [formData, setFormData] = useState({ email: "", message: "" });
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formMessage, setFormMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const profileImages = [
     { image: "/profile-image-1.png", label: "Full-Stack Developer" },
@@ -235,19 +273,41 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
     const handleWheel = (e: WheelEvent) => {
-      if (scrollContainerRef.current) {
-        e.preventDefault();
-        scrollContainerRef.current.scrollLeft += e.deltaY * 0.8;
-      }
+      e.preventDefault();
+      container.scrollLeft += e.deltaY * 0.8;
     };
 
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener("wheel", handleWheel, { passive: false });
-      return () => container.removeEventListener("wheel", handleWheel);
-    }
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
   }, []);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   useEffect(() => {
     const openModalFromHash = () => {
@@ -259,6 +319,10 @@ export default function Home() {
 
     return () => window.removeEventListener("hashchange", openModalFromHash);
   }, []);
+
+  if (isLoading) {
+    return <LandingSkeleton />;
+  }
 
   return (
     <div className={`min-h-screen animate-in fade-in duration-1000 transition-colors ${
@@ -447,7 +511,14 @@ export default function Home() {
             </h2>
           </div>
           <div className="relative">
-            <div className="overflow-x-auto pb-4 custom-scrollbar" ref={scrollContainerRef}>
+            <div 
+              className={`overflow-x-auto pb-4 custom-scrollbar cursor-grab ${isDragging ? "cursor-grabbing" : ""}`}
+              ref={scrollContainerRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+            >
               <div className="flex gap-6 min-w-max px-4">
                 {weekDetails.map((item, i) => (
                   <div key={i} className="flex-shrink-0 w-72 animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer group" style={{ animationDelay: `${i * 30}ms` }} onClick={() => setSelectedWeek(item.week)}>

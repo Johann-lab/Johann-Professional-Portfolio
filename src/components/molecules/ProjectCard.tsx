@@ -31,11 +31,23 @@ const techStackMeta: Record<string, TechMeta> = {
     bgColorLight: "bg-black",
     bgColorDark: "bg-gray-900",
   },
+  "Node.js": {
+    label: "Node.js",
+    iconSrc: "https://cdn.simpleicons.org/nodedotjs/ffffff",
+    bgColorLight: "bg-green-600",
+    bgColorDark: "bg-green-700",
+  },
   React: {
     label: "React",
     iconSrc: "https://cdn.simpleicons.org/react/ffffff",
     bgColorLight: "bg-cyan-500",
     bgColorDark: "bg-cyan-600",
+  },
+  "Tailwind CSS": {
+    label: "Tailwind CSS",
+    iconSrc: "https://cdn.simpleicons.org/tailwindcss/ffffff",
+    bgColorLight: "bg-sky-500",
+    bgColorDark: "bg-sky-600",
   },
   TypeScript: {
     label: "TypeScript",
@@ -48,6 +60,36 @@ const techStackMeta: Record<string, TechMeta> = {
     iconSrc: "https://cdn.simpleicons.org/mongodb/ffffff",
     bgColorLight: "bg-green-600",
     bgColorDark: "bg-green-700",
+  },
+  PinataSDK: {
+    label: "PinataSDK",
+    iconSrc: "https://cdn.simpleicons.org/pinata/ffffff",
+    bgColorLight: "bg-purple-600",
+    bgColorDark: "bg-purple-700",
+  },
+  Sui: {
+    label: "Sui",
+    iconSrc: "https://cdn.simpleicons.org/sui/ffffff",
+    bgColorLight: "bg-orange-500",
+    bgColorDark: "bg-orange-600",
+  },
+  ChatGPT: {
+    label: "ChatGPT",
+    iconSrc: "https://cdn.simpleicons.org/openai/ffffff",
+    bgColorLight: "bg-emerald-500",
+    bgColorDark: "bg-emerald-600",
+  },
+  Claude: {
+    label: "Claude",
+    iconSrc: "https://cdn.simpleicons.org/anthropic/ffffff",
+    bgColorLight: "bg-amber-500",
+    bgColorDark: "bg-amber-600",
+  },
+  Grok: {
+    label: "Grok",
+    iconSrc: "https://cdn.simpleicons.org/xai/ffffff",
+    bgColorLight: "bg-red-500",
+    bgColorDark: "bg-red-600",
   },
   Python: {
     label: "Python",
@@ -66,12 +108,6 @@ const techStackMeta: Record<string, TechMeta> = {
     iconSrc: "https://cdn.simpleicons.org/d3dotjs/ffffff",
     bgColorLight: "bg-orange-500",
     bgColorDark: "bg-orange-600",
-  },
-  "Tailwind CSS": {
-    label: "Tailwind CSS",
-    iconSrc: "https://cdn.simpleicons.org/tailwindcss/ffffff",
-    bgColorLight: "bg-sky-500",
-    bgColorDark: "bg-sky-600",
   },
   "Framer Motion": {
     label: "Framer Motion",
@@ -159,7 +195,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         <p className={`text-xs font-medium group-hover:text-[#1E40AF] transition-colors ${
           isDark ? "text-[#7C9AC6]" : "text-[#94A3B8]"
         }`}>
-          {new Date(project.completionDate).toLocaleDateString("en-US", {
+          {project.duration || new Date(project.completionDate).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
           })}

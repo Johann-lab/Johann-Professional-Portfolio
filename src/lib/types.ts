@@ -4,6 +4,7 @@ export interface Project {
   description: string;
   techStack: string[];
   completionDate: string;
+  duration?: string;
   category: "SEO Audit" | "Frontend" | "Research" | "Backend" | "Full Stack";
   featured?: boolean;
   image?: string;

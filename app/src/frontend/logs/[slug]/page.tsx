@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use } from "react";
+import { useMemo } from "react";
 import NavDashboard from "../../navigation dashboard/NavDashboard";
 import { getLogPosts } from "@/lib/data";
 import { useTheme } from "@/context/ThemeContext";
@@ -14,7 +15,7 @@ export default function LogPostPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
   const { isDark } = useTheme();
-  const logPosts = getLogPosts();
+  const logPosts = useMemo(() => getLogPosts(), []);
   const post = logPosts.find((p) => p.slug === slug);
 
   if (!post) {
